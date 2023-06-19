@@ -1,18 +1,23 @@
 package io.proj3ct.WhiteBananaBot.config;
 
+import io.proj3ct.WhiteBananaBot.service.TelegramBot;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@Data
-@PropertySource("application.properties")
 public class BotConfig {
 
     @Value("${bot.name}")
-    String botName;
+    private String botName;
 
     @Value("${bot.token}")
-    String token;
+    private String token;
+
+    @Bean
+    public TelegramBot telegramBot() {
+        return new TelegramBot(botName, token);
+    }
 }

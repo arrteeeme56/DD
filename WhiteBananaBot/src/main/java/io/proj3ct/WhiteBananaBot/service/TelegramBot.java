@@ -1,34 +1,28 @@
 package io.proj3ct.WhiteBananaBot.service;
 
-import io.proj3ct.WhiteBananaBot.config.BotConfig;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-@Component
 public class TelegramBot extends TelegramLongPollingBot {
 
-    BotConfig config;
+    private final String botUsername;
 
-    public TelegramBot() {
-        this.config = config;
+    public TelegramBot(String botUsername, String botToken) {
+        super(botToken);
+        this.botUsername = botUsername;
     }
 
     @Override
     public String getBotUsername() {
-        return config.getBotName();
-        }
+        return botUsername;
+    }
 
     @Override
-    public String getBotToken() { return config.getToken(); }
+    public void onUpdateReceived(Update update) {
 
-    @Override
-    public void onUpdateReceived (Update update){
-
-        if(update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
@@ -41,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } catch (TelegramApiException e) {
                         throw new RuntimeException(e);
                     }
-                    default:
+                default:
                     try {
                         sendMessage(chatId, "Sorry, command was not recognized ");
                     } catch (TelegramApiException e) {
@@ -51,12 +45,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
 
     }
+
     private void startCommandReceived(long chatId, String name) throws TelegramApiException {
-
         String answer = "Hi, " + name + ", nice name";
-
         sendMessage(chatId, answer);
-
     }
 
     private void sendMessage(long chatId, String textToSend) throws TelegramApiException {
@@ -66,10 +58,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         try {
             execute(message);
-        }
-        catch (TelegramApiException e) {
-
-
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 
